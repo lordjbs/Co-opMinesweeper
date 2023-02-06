@@ -43,7 +43,9 @@ app.UseCors(c =>
     c.WithOrigins("file:///", "localhost");
 });
 app.UseCors("AllowCoopMinesweeper");
-app.UseStaticFiles();
+app.UseWhen(
+    context => !context.Request.Path.StartsWithSegments("/tsconfig.json") && !context.Request.Path.StartsWithSegments("/tslint.json") && !context.Request.Path.StartsWithSegments("/package.json") && !context.Request.Path.StartsWithSegments("/package-lock.json"),
+    appBuilder => appBuilder.UseStaticFiles());
 
 app.MapHub<GameHub>("/gameHub");
 
