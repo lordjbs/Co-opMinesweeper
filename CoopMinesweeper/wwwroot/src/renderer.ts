@@ -53,19 +53,70 @@ abstract class Renderer {
             }
 
             if (field.type === FieldType.Bomb) {
-                Renderer.fillField(field, "rgba(203, 66, 66, 1)");
+                Renderer.fillField(field, "rgba(255, 0, 0, 1)");
 
                 gameCanvasContext.drawImage(bombImage, field.startX, field.startY);
             } else if (field.type === FieldType.Number) {
-                Renderer.fillField(field, "rgba(194, 219, 198, 1)");
+                Renderer.fillField(field, this.calculateColor(field));
 
-                gameCanvasContext.fillStyle = "rgb(0, 0, 0)";
-                gameCanvasContext.font = "20px Arial, Helvetica, sans-serif";
+                // Determine number color
+                var numberColor = "";
+                console.log(field.number)
+                switch(field.number) {
+                    case 1:
+                        numberColor = "rgb(0,0,253)";
+                        break;
+                    case 2:
+                        numberColor = "rgb(1,126,0)";
+                        break;
+                    case 3:
+                        numberColor = "rgb(254,0,0)";
+                        break;
+                    case 4:
+                        numberColor = "rgb(1,1,128)";
+                        break;
+                    case 5:
+                        numberColor = "rgb(130,0,2)";
+                        break;
+                    case 6:
+                        numberColor = "rgb(0,128,128)";
+                        break;
+                    case 7:
+                        numberColor = "rgb(0,0,0)";
+                        break;
+                    case 8:
+                        numberColor = "rgb(128,128,128)";
+                        break;
+                }
+
+                console.log(numberColor)
+                gameCanvasContext.fillStyle = numberColor;
+                gameCanvasContext.font = "20px Arial Black, Helvetica, sans-serif";
                 gameCanvasContext.fillText(`${field.number}`, field.startX + 9, field.startY + 23);
             } else {
-                Renderer.fillField(field, "rgba(194, 219, 198, 1)");
+                Renderer.fillField(field, this.calculateColor(field)); //rgb(234, 221, 202)
             }
         }
+    }
+    
+    public static calculateColor(field: Field): string {
+        var color = "";
+
+        if(field.row % 2 == 0) {
+            if(field.column % 2 == 0) {
+                return "rgba(234, 221, 202, 1)"
+            } else {
+                return "rgba(212, 200, 182, 1)"
+            }
+        } else {
+            if(field.column % 2 == 0) {
+                return "rgba(212, 200, 182, 1)"
+            } else {
+                return "rgba(234, 221, 202, 1)"
+            }
+        }
+
+        return color;
     }
 
     public static fillField(field: Field, fillStyle: string): void {

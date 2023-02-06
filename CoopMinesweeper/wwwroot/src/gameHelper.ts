@@ -39,7 +39,7 @@ abstract class GameHelper {
         endGameButton.style.display = "inline-block";
         newGameButton.style.display = "none";
         overlayStatus.style.display = "block";
-        overlayStatus.innerText = "Other player has disconnected :/";
+        overlayStatus.innerText = "Other player has disconnected. Other players can reconnect for a short amount of time, if not the game will be deleted.";
     }
 
     // #endregion

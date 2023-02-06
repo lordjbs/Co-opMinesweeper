@@ -4,8 +4,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var database = new Database(builder.Configuration);
+database.Load();
 
 builder.Services.AddSignalR().AddHubOptions<GameHub>(options =>
 {
@@ -34,6 +38,10 @@ builder.Services.AddHostedService<TimedHostedService>();
 builder.WebHost.UseUrls("http://localhost:5010");
 
 var app = builder.Build();
+app.UseCors(c =>
+{
+    c.WithOrigins("file:///", "localhost");
+});
 app.UseCors("AllowCoopMinesweeper");
 app.UseStaticFiles();
 

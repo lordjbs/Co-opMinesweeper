@@ -18,6 +18,7 @@ if (debugSimplePeer) {
 let hostSignal: string;
 let gameStarted: boolean = false;
 let newGameId: string;
+var waiting: boolean = false;
 
 overlayStatus.innerText = "Waiting for signal...";
 

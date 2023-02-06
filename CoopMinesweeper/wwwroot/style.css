@@ -1,6 +1,6 @@
 body {
     margin: 0;
-    background-color: rgba(143, 188, 143, 1);
+    background-color: #232323;
 }
 
 *:focus {
@@ -107,7 +107,8 @@ body {
 #canvas-holder {
     height: 514px;
     position: relative;
-    background-color: rgb(59, 155, 102);
+    background: repeating-conic-gradient(#3b9b66 0% 25%, #318557 0% 50%) 50% / 64px 64px;
+          /*    background-color: rgb(59, 155, 102);*/
 }
 
 #footer {
@@ -137,13 +138,6 @@ body {
 
 /* #endregion Canvas */
 
-.github-logo {
-    height: 16px;
-    margin-left: 4px;
-    vertical-align: middle;
-    padding-bottom: 3px;
-}
-
 #game-id-input {
     padding: 12px 20px;
     font-size: 23px;
@@ -156,7 +150,6 @@ body {
 /* #region Buttons */
 
 #button-holder {
-    width: 270px;
     text-align: left;
 }
 

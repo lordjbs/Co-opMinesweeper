@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Npgsql;
+using Microsoft.Data.Sqlite;
+using System.ComponentModel.DataAnnotations.Schema;
+using CoopMinesweeper;
+using System;
 
 namespace CoopMinesweeper.Services;
 
@@ -12,37 +15,31 @@ public interface IGameService
 
 public class GameService : IGameService
 {
-    private readonly string _connString;
+    private readonly Database database;
+    private readonly string databaseLocation;
 
     public GameService(IConfiguration configuration)
     {
-        _connString = configuration["ConnectionStrings:DefaultConnectionString"];
+        databaseLocation = configuration["AppSettings:DatabasePath"];
+        database = new Database(configuration);
     }
 
     public string CreateGame(string hostConnectionId)
     {
-        string gameId;
-        using var conn = new NpgsqlConnection(_connString);
-        conn.Open();
-
-        using var cmd = new NpgsqlCommand();
-        cmd.Connection = conn;
-        cmd.CommandText = "CALL create_game(@p);";
-        cmd.Parameters.AddWithValue("p", hostConnectionId);
-        gameId = (string)cmd.ExecuteScalar();
-
-        return gameId;
+        return database.createGame(hostConnectionId).ToString();
     }
 
     public string GetHostConnectionId(string gameId)
     {
         string hostConnectionId;
-        using var conn = new NpgsqlConnection(_connString);
+        using var conn = new SqliteConnection("Data Source="+databaseLocation);
         conn.Open();
 
-        using var cmd = new NpgsqlCommand("SELECT host_connection_id FROM public.games AS g WHERE g.game_id = @p;", conn);
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT host_connection_id FROM games AS g WHERE g.game_id = @p;";
         cmd.Parameters.AddWithValue("p", gameId);
         hostConnectionId = (string)cmd.ExecuteScalar();
+        Console.WriteLine(hostConnectionId);
 
         return hostConnectionId;
     }
@@ -51,15 +48,16 @@ public class GameService : IGameService
     {
         try
         {
-            using var conn = new NpgsqlConnection(_connString);
+            using var conn = new SqliteConnection("Data Source=" + databaseLocation);
             conn.Open();
 
-            using var cmd = new NpgsqlCommand("DELETE FROM public.games WHERE created_at < NOW() - interval '5' minute;", conn);
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "DELETE FROM games WHERE created_at < datetime('now', '-300 seconds');";
             cmd.ExecuteNonQuery();
         }
-        catch
-        {
-            // ignored
+        catch(Exception ex)
+        { 
+            Console.WriteLine(ex.Message);
         }
     }
 }

@@ -262,6 +262,19 @@ __pycache__/
 
 # tsc build output
 dist/
+CoopMinesweeper/wwwroot/dist/
 
 # production json
 appsettings.Production.json
+
+# database
+CoopMinesweeper/database.db
+
+CoopMinesweeper/bin/
+CoopMinesweeper/bin
+CoopMinesweeper/wwwroot/dist
+CoopMinesweeper/obj
+CoopMinesweeper/obj/
+CoopMinesweeper/appsettings.json
+.vs/
+Backup/

@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  minesweeper:
+    build: location
+    restart: unless-stopped
+    ports: []
+    volumes:
+      - /location/minesweeper-files/:/app

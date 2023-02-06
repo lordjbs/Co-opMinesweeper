@@ -126,7 +126,7 @@ otherMouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
 // #region Html Events
 
 const getHostSignal: () => void = (): void => {
-    const validId: boolean = /^\d{4}$/.test(gameIdInput.value);
+    const validId: boolean = /^\d{5}$/.test(gameIdInput.value);
 
     if (!validId) {
         return;
