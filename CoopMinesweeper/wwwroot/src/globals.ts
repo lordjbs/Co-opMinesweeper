@@ -37,13 +37,13 @@ otherMouseCanvas.width = otherMouseCanvas.offsetWidth;
 otherMouseCanvas.height = otherMouseCanvas.offsetHeight;
 
 let cursorImage: HTMLImageElement = new Image();
-cursorImage.src = "cursor.png";
+cursorImage.src = "img/cursor.png";
 
 let flagImage: HTMLImageElement = new Image();
-flagImage.src = "flag.png";
+flagImage.src = "img/flag.png";
 
 let bombImage: HTMLImageElement = new Image();
-bombImage.src = "bomb.png";
+bombImage.src = "img/bomb.png";
 
 const overlay: HTMLElement = document.getElementById("overlay") as HTMLElement;
 const overlayStatus: HTMLElement = document.getElementById("overlay-status") as HTMLElement;
