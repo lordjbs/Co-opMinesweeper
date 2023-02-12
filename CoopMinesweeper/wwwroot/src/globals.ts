@@ -52,6 +52,7 @@ const newGameButton: HTMLButtonElement = document.getElementById("new-game-butto
 const endGameButton: HTMLButtonElement = document.getElementById("end-game-button") as HTMLButtonElement;
 
 const testLatencyButton: HTMLButtonElement = document.getElementById("test-latency-button") as HTMLButtonElement;
+let latencyInterval: ReturnType<typeof setInterval>;
 
 let flagsElement: HTMLElement = document.getElementById("flags") as HTMLElement;
 let timerElement: HTMLElement = document.getElementById("timer") as HTMLElement;

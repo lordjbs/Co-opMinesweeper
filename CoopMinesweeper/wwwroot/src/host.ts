@@ -48,6 +48,10 @@ peer.on("signal", (data: any): void => {
 peer.on("connect", (): void => {
     GameHelper.hideOverlay();
     signalrConnection.stop();
+    // Receive latency
+    Helpers.latencyTest(peer, "host");
+
+    latencyInterval = setInterval(() => {Helpers.latencyTest(peer, "host");}, 15000);
 });
 
 peer.on("data", (data: any): void => {
@@ -71,6 +75,7 @@ peer.on("data", (data: any): void => {
 
 peer.on("close", () => {
     debugger;
+    clearInterval(latencyInterval);
     GameHelper.showEndGameScreen();
 });
 
@@ -152,13 +157,6 @@ copyToClipboardButton.addEventListener("click", (): void => {
     Helpers.copyToClipboard(newGameId);
     copyToClipboardButton.innerText = "Copied";
     copyToClipboardButton.disabled = true;
-});
-
-testLatencyButton.addEventListener("click", (): void => {
-    for (let i: number = 1; i < 4; i++) {
-        latencyTestStamps[i] = performance.now();
-        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.LatencyTest, i)));
-    }
 });
 
 // #endregion

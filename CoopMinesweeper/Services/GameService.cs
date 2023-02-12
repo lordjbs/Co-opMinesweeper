@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Data.Sqlite;
-using System.ComponentModel.DataAnnotations.Schema;
-using CoopMinesweeper;
 using System;
 
 namespace CoopMinesweeper.Services;

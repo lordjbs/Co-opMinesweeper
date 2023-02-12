@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.2" />
-    <PackageReference Include="Npgsql" Version="4.0.4" />
   </ItemGroup>
 
 </Project>

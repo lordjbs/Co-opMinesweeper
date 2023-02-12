@@ -61,7 +61,6 @@ abstract class Renderer {
 
                 // Determine number color
                 var numberColor = "";
-                console.log(field.number)
                 switch(field.number) {
                     case 1:
                         numberColor = "rgb(0,0,253)";
@@ -89,7 +88,6 @@ abstract class Renderer {
                         break;
                 }
 
-                console.log(numberColor)
                 gameCanvasContext.fillStyle = numberColor;
                 gameCanvasContext.font = "20px Arial Black, Helvetica, sans-serif";
                 gameCanvasContext.fillText(`${field.number}`, field.startX + 9, field.startY + 23);
@@ -100,8 +98,6 @@ abstract class Renderer {
     }
     
     public static calculateColor(field: Field): string {
-        var color = "";
-
         if(field.row % 2 == 0) {
             if(field.column % 2 == 0) {
                 return "rgba(234, 221, 202, 1)"
@@ -115,8 +111,6 @@ abstract class Renderer {
                 return "rgba(234, 221, 202, 1)"
             }
         }
-
-        return color;
     }
 
     public static fillField(field: Field, fillStyle: string): void {

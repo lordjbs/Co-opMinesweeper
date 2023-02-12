@@ -40,7 +40,17 @@ abstract class Helpers {
 
         if (stamp === 3) {
             averageLatency = (latencyTestResults[1] + latencyTestResults[2] + latencyTestResults[3]) / 3;
-            alert(`The latency is ${averageLatency} milliseconds.`);
+            document.getElementById("latency")!!.textContent = `Latency: ${averageLatency.toFixed()}ms`;
         }
+    }
+
+    public static latencyTest(sp: SimplePeer, type: string) {
+        [...Array(3)].map((_, i) => { 
+            latencyTestStamps[i+1] = performance.now();
+            if(type == "host") 
+                sp.send(JSON.stringify(new ServerDataObject(ServerEventType.LatencyTest, i+1)))
+            else
+                sp.send(JSON.stringify(new ClientDataObject(ClientEventType.LatencyTest, i+1)));
+        });
     }
 }

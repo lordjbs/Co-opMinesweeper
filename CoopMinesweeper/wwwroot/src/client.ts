@@ -18,6 +18,7 @@ if (debugSimplePeer) {
 let connected: boolean = false;
 let hostConnectionId: string;
 
+
 overlayStatus.innerText = "Waiting for game id...";
 
 // #region SimplePeer
@@ -33,6 +34,9 @@ clientPeer.on("signal", (data: any): void => {
 clientPeer.on("connect", (): void => {
     GameHelper.hideOverlay();
     clientSignalrConnection.stop();
+
+    Helpers.latencyTest(clientPeer, "client");
+    latencyInterval = setInterval(() => {Helpers.latencyTest(clientPeer, "client");}, 15000);
 });
 
 clientPeer.on("data", (data: any): void => {
@@ -56,6 +60,7 @@ clientPeer.on("data", (data: any): void => {
 
 clientPeer.on("close", () => {
     GameHelper.showEndGameScreen();
+    clearInterval(latencyInterval);
 });
 
 clientPeer.on("error", (err: any): void => {
@@ -158,13 +163,6 @@ newGameButton.addEventListener("click", (): void => {
 
 endGameButton.addEventListener("click", (): void => {
     window.location.href = "/index.html";
-});
-
-testLatencyButton.addEventListener("click", (): void => {
-    for (let i: number = 1; i < 4; i++) {
-        latencyTestStamps[i] = performance.now();
-        clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.LatencyTest, i)));
-    }
 });
 
 // #endregion

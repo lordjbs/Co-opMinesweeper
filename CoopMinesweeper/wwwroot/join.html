@@ -21,11 +21,7 @@
             <div id="overlay-status"></div>
         </div>
     </div>
-
-    <div>
-        <button id="test-latency-button" style="display: none;">Test Latency</button>
-    </div>
-
+    
     <main>
         <div id="main">
             <div id="content-holder">
@@ -46,6 +42,10 @@
                         <canvas id="other-mouse-canvas"></canvas>
                     </div>
                     <div id="footer" class="unselectable">
+                        <div style="color: white;">
+                            Enable keyboard control:<input autocomplete="off" id="kbtoggle" type="checkbox">
+                             - <span style="color:white" id="latency"></span>
+                        </div>
                         <p style="color:white">
                         Co-opMinesweeper fork licensed under AGPL-3.0 - <a style="color:#03dac6" href="https://github.com/lordjbs/Co-opMinesweeper" target="_blank"
                             rel="noopener">Source code</a><br>
