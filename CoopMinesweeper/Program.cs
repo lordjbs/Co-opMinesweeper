@@ -34,7 +34,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddSingleton<IGameService, GameService>();
 builder.Services.AddHostedService<TimedHostedService>();
 
-builder.WebHost.UseUrls("http://localhost:5010");
+builder.WebHost.UseUrls(builder.Configuration["AppSettings:HostUrl"]);
 
 var app = builder.Build();
 app.UseCors(c =>
