@@ -4,10 +4,10 @@
     <TargetFramework>net7.0</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
-    <Version>0.0.2</Version>
-    <Authors>Stefan Timovski</Authors>
-    <PackageProjectUrl>https://github.com/Timovski/Co-opMinesweeper</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/Timovski/Co-opMinesweeper/blob/master/LICENSE.md</PackageLicenseUrl>
+    <Version>0.0.3</Version>
+    <Authors>Stefan Timovski, lordjbs</Authors>
+    <PackageProjectUrl>https://github.com/lordjbs/Co-opMinesweeper</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/lordjbs/Co-opMinesweeper/blob/master/LICENSE.md</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/Timovski/Co-opMinesweeper</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Description>A 2-player cooperative browser-based variant of the game Minesweeper.</Description>
