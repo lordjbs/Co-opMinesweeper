@@ -112,6 +112,7 @@ signalrConnection.onclose((error?: Error): void => {
 
 otherMouseCanvas.addEventListener("mousemove", (e: MouseEvent): void => {
     const mousePosition: MousePosition = Helpers.getMousePosition(otherMouseCanvas, e);
+    lastMousePosition = mousePosition;
     peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Move, mousePosition)));
 
     const field: Field = FieldHelper.getField(mousePosition.x, mousePosition.y);
@@ -140,6 +141,25 @@ otherMouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
 
     HostHelper.handleFlag(field);
 });
+
+toggle.addEventListener("change", () => {
+    document.getElementById("kbt")!!.style.display = `${toggle.checked ? "inline" : "none"}`;
+});
+
+document.addEventListener("keypress", (e: KeyboardEvent): void => {
+    if(!toggle.checked) return;
+
+    const field: Field = FieldHelper.getField(lastMousePosition.x, lastMousePosition.y);
+
+    if(e.key == "w") {
+        if (field.revealed || field.flag) return;
+        HostHelper.handleClick(field);
+    } else if(e.key == "d") {
+        if (field.revealed) return;
+        HostHelper.handleFlag(field);
+    }
+});
+
 
 // #endregion
 

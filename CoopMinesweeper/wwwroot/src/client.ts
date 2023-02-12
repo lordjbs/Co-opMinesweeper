@@ -97,6 +97,7 @@ clientSignalrConnection.onclose((error?: Error): void => {
 
 otherMouseCanvas.addEventListener("mousemove", (e: MouseEvent): void => {
     const mousePosition: MousePosition = Helpers.getMousePosition(otherMouseCanvas, e);
+    lastMousePosition = mousePosition;
     clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Move, mousePosition)));
 
     const field: Field = FieldHelper.getField(mousePosition.x, mousePosition.y);
@@ -124,6 +125,24 @@ otherMouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
     }
 
     clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Flag, mousePosition)));
+});
+
+toggle.addEventListener("change", () => {
+    document.getElementById("kbt")!!.style.display = `${toggle.checked ? "inline" : "none"}`;
+});
+
+document.addEventListener("keypress", (e: KeyboardEvent): void => {
+    if(!toggle.checked) return;
+
+    const field: Field = FieldHelper.getField(lastMousePosition.x, lastMousePosition.y);
+
+    if(e.key == "w") {
+        if (field.revealed || field.flag) return;
+        clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Click, lastMousePosition)));
+    } else if(e.key == "d") {
+        if (field.revealed) return;
+        clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Flag, lastMousePosition)));
+    }
 });
 
 // #endregion

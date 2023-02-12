@@ -57,6 +57,9 @@ let latencyInterval: ReturnType<typeof setInterval>;
 let flagsElement: HTMLElement = document.getElementById("flags") as HTMLElement;
 let timerElement: HTMLElement = document.getElementById("timer") as HTMLElement;
 
+let lastMousePosition: MousePosition;
+const toggle: HTMLInputElement = document.getElementById("kbtoggle") as HTMLInputElement;
+
 // Host only
 const gameIdText: HTMLElement = document.getElementById("game-id-text") as HTMLElement;
 const copyToClipboardButton: HTMLButtonElement = document.getElementById("copy-to-clipboard-button") as HTMLButtonElement;
