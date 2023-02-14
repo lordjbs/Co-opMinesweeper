@@ -3,8 +3,7 @@ FieldHelper.initializeFields();
 Helpers.scrollIntoView();
 
 let clientPeer: SimplePeer = new SimplePeer({ initiator: false, trickle: false });
-let clientSignalrConnection: signalR = new signalR.HubConnectionBuilder().withUrl(baseSignalrUrl + "/gameHub", { logger: signalR.LogLevel.None }).build();
-clientSignalrConnection.serverTimeoutInMilliseconds = 300000; // 5 minutes
+let clientWebsocket = new WebSocket("ws://localhost:3000/");
 
 if (debugSimplePeer) {
     const clientOriginalDebug: any = clientPeer._debug;
@@ -17,23 +16,22 @@ if (debugSimplePeer) {
 
 let connected: boolean = false;
 let hostConnectionId: string;
-
+let clientSignal: string;
 
 overlayStatus.innerText = "Waiting for game id...";
 
 // #region SimplePeer
 
+// Creates offer
 clientPeer.on("signal", (data: any): void => {
-    const clientSignal: string = JSON.stringify(data);
-
-    clientSignalrConnection.invoke("ReceiveClientSignal", hostConnectionId, clientSignal).catch((err: any) => {
-        // todo: implement
-    });
+    console.log("Created offer");
+    clientSignal = JSON.stringify(data);
+    clientWebsocket.send(JSON.stringify({type: "ClientOffer", offer: clientSignal, id: hostGameId}));
 });
 
 clientPeer.on("connect", (): void => {
     GameHelper.hideOverlay();
-    clientSignalrConnection.stop();
+    clientWebsocket.close();
 
     Helpers.latencyTest(clientPeer, "client");
     latencyInterval = setInterval(() => {Helpers.latencyTest(clientPeer, "client");}, 15000);
@@ -73,23 +71,53 @@ clientPeer.on("error", (err: any): void => {
 
 // #endregion
 
-// #region SignalR
+// #region Websocket
 
-clientSignalrConnection.start().then(() => {
+let clientId: string;
+let hostGameId: string;
+
+clientWebsocket.addEventListener('open', (event) => {
     overlayStatus.innerText = "Connected to server successfully, enter game id...";
     connected = true;
-}).catch((err: any) => {
-    // todo: implement
+    clientWebsocket.send(JSON.stringify({type: "Id"}));
 });
 
-clientSignalrConnection.on("ClientSignalPrompt", (hostConnId: string, hostSignal: string) => {
-    hostConnectionId = hostConnId;
-    clientPeer.signal(hostSignal);
+clientWebsocket.addEventListener('message', (event: MessageEvent) => {
+    const data = JSON.parse(event.data);
+    console.log(data);
+
+    switch(data.type) {
+        case "Id":
+            clientId = data.id;
+            console.log("Received id:" + clientId)
+            break;
+        case "FindGame":
+            if(data.success != true) {
+                overlayStatus.innerText = "No game found for the provided game id...";
+                return console.log(data)
+            };
+            hostGameId = data.hostId
+            overlayStatus.innerText = "Game found, establishing connection with other player...";
+            break;
+        case "ReceivedHostOffer":
+            console.log("Received offer");
+            clientPeer.signal(JSON.parse(data.offer));
+            break;
+    }
 });
 
-clientSignalrConnection.onclose((error?: Error): void => {
-    // todo: implement
-});
+const getHostSignal: () => void = (): void => {
+    const validId: boolean = /^\d{5}$/.test(gameIdInput.value);
+
+    if (!validId) {
+        return;
+    }
+
+    if (connected) {
+        overlayStatus.innerText = "Looking for games for the provided game id...";
+        clientWebsocket.send(JSON.stringify({type: "FindGame", id: gameIdInput.value}));
+    }
+};
 
 // #endregion
 
@@ -149,29 +177,6 @@ document.addEventListener("keypress", (e: KeyboardEvent): void => {
 
 // #region Html Events
 
-const getHostSignal: () => void = (): void => {
-    const validId: boolean = /^\d{5}$/.test(gameIdInput.value);
-
-    if (!validId) {
-        return;
-    }
-
-    if (connected) {
-        overlayStatus.innerText = "Looking for games for the provided game id...";
-
-        clientSignalrConnection.invoke("GetHostSignal", gameIdInput.value).then((gameFound: boolean) => {
-            if (gameFound) {
-                overlayStatus.innerText = "Game found, establishing connection with other player...";
-            } else {
-                overlayStatus.innerText = "No game found for the provided game id...";
-            }
-        }).catch((err: any) => {
-            // todo: implement
-        });
-    } else {
-        // todo: implement
-    }
-};
 
 gameIdInput.addEventListener("keyup", (event: KeyboardEvent) => { if (event.keyCode === 13) { getHostSignal(); } });
 connectButton.addEventListener("click", getHostSignal);

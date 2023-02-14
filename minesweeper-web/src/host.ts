@@ -3,8 +3,8 @@ FieldHelper.initializeFields();
 Helpers.scrollIntoView();
 
 let peer: SimplePeer = new SimplePeer({ initiator: true, trickle: false });
-let signalrConnection: signalR = new signalR.HubConnectionBuilder().withUrl(baseSignalrUrl + "/gameHub", { logger: signalR.LogLevel.None }).build();
-signalrConnection.serverTimeoutInMilliseconds = 300000; // 5 minutes
+
+let hostWebsocket = new WebSocket("ws://localhost:3000/");
 
 if (debugSimplePeer) {
     const originalDebug: any = peer._debug;
@@ -26,28 +26,11 @@ overlayStatus.innerText = "Waiting for signal...";
 
 peer.on("signal", (data: any): void => {
     hostSignal = JSON.stringify(data);
-
-    overlayStatus.innerText = "Signal received successfully, connecting to server...";
-
-    signalrConnection.start().then(() => {
-        overlayStatus.innerText = "Connected to server successfully, creating game...";
-
-        signalrConnection.invoke("CreateGame").then((gameId: string) => {
-            newGameId = gameId;
-            gameIdText.innerText = `Game Id: ${gameId}`;
-            overlayStatus.innerText = "Give the game id to the other player. Waiting for other player to join...";
-            copyToClipboardButton.style.display = "inline-block";
-        }).catch((err: any) => {
-            // todo: implement
-        });
-    }).catch((err: any) => {
-        // todo: implement
-    });
 });
 
 peer.on("connect", (): void => {
     GameHelper.hideOverlay();
-    signalrConnection.stop();
+    hostWebsocket.close();
     // Receive latency
     Helpers.latencyTest(peer, "host");
 
@@ -92,20 +75,47 @@ peer.on("error", (err: any): void => {
 
 // #region SignalR
 
-signalrConnection.on("HostSignalPrompt", (clientConnectionId: string) => {
-    signalrConnection.invoke("ReceiveHostSignal", clientConnectionId, hostSignal).catch((err: any) => {
-        // todo: implement
-    });
+let hostId;
+
+hostWebsocket.addEventListener('open', () => {
+    hostWebsocket.send(JSON.stringify({type: "Id"}));
+    overlayStatus.innerText = "Connected to server successfully, creating game...";
+    hostWebsocket.send(JSON.stringify({type: "NewGame"}));
 });
 
-signalrConnection.on("ConnectWithClient", (clientSignal: string) => {
-    peer.signal(clientSignal);
-});
+let clientGameId;
 
-signalrConnection.onclose((error?: Error): void => {
-    // todo: implement
-});
+hostWebsocket.addEventListener('message', (event: MessageEvent) => {
+    const data = JSON.parse(event.data);
+    console.log(data);
 
+    switch(data.type) {
+        case "Id":
+            hostId = data.id;
+            console.log("Received id:" + hostId)
+            break;
+        case "NewGame":
+            if(data.success != true) {
+                overlayStatus.innerText = "Unable to create a game.";
+                return console.log(data)
+            };
+
+            newGameId = data.id;
+            gameIdText.innerText = `Game Id: ${data.id}`;
+            overlayStatus.innerText = "Give the game id to the other player. Waiting for other player to join...";
+            copyToClipboardButton.style.display = "inline-block";
+            break;
+        case "ReceivedConnection":
+            clientGameId = data.clientId;
+            hostWebsocket.send(JSON.stringify({type: "HostOffer", offer: hostSignal, id: clientGameId}));
+
+            break;
+        case "ReceivedClientOffer":
+            console.log("received");
+            peer.signal(JSON.parse(data.offer));
+            break;
+    }
+});
 // #endregion
 
 // #region Canvas Events
