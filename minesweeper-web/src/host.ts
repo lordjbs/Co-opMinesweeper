@@ -153,18 +153,37 @@ otherMouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
 });
 
 toggle.addEventListener("change", () => {
+    exposeSpan.textContent = localStorage.exposeKey == undefined ? "w" : localStorage.exposeKey
+    flagSpan.textContent = localStorage.flagKey == undefined ? "d" : localStorage.flagKey
+
     document.getElementById("kbt")!!.style.display = `${toggle.checked ? "inline" : "none"}`;
 });
 
 document.addEventListener("keypress", (e: KeyboardEvent): void => {
+    if(exposePressed) {
+        exposeKey = e.key == flagKey ? exposeKey : e.key;
+        localStorage.exposeKey = exposeKey;
+        exposeSpan.textContent = exposeKey;
+        exposePressed = false;
+
+        return;
+    } else if(flagPressed) {
+        flagKey = e.key == exposeKey ? flagKey : e.key;
+        localStorage.flagKey = flagKey;
+        flagSpan.textContent = flagKey;
+        flagPressed = false;
+
+        return;
+    }
+
     if(!toggle.checked) return;
 
     const field: Field = FieldHelper.getField(lastMousePosition.x, lastMousePosition.y);
 
-    if(e.key == "w") {
+    if(e.key == exposeKey) {
         if (field.revealed || field.flag) return;
         HostHelper.handleClick(field);
-    } else if(e.key == "d") {
+    } else if(e.key == flagKey) {
         if (field.revealed) return;
         HostHelper.handleFlag(field);
     }

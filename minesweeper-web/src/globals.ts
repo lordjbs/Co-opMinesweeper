@@ -69,3 +69,37 @@ const gameIdInput: HTMLInputElement = document.getElementById("game-id-input") a
 const connectButton: HTMLButtonElement = document.getElementById("connect-button") as HTMLButtonElement;
 
 // #endregion Html globals
+
+var exposePressed = false;
+var flagPressed = false;
+var exposeKey = localStorage.exposeKey == undefined ? "w" : localStorage.exposeKey;
+var flagKey = localStorage.flagKey == undefined ? "d" : localStorage.findKey;
+
+let exposeSpan = document.getElementById("expose_key")!!;
+let flagSpan = document.getElementById("flag_key")!!;
+
+exposeSpan.addEventListener("click", () => {
+    if(flagPressed) return;
+
+    if(exposePressed) {
+        exposeSpan.textContent = exposeKey;
+        exposePressed = false;
+        return;
+    }
+
+    exposeSpan.textContent = "listening..."
+    exposePressed = true;
+});
+
+flagSpan.addEventListener("click", () => {
+    if(exposePressed) return;
+
+    if(flagPressed) {
+        flagSpan.textContent = flagKey;
+        flagPressed = false;
+        return;
+    }
+
+    flagSpan.textContent = "listening..."
+    flagPressed = true;
+});

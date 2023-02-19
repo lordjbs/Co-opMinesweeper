@@ -156,18 +156,36 @@ otherMouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
 });
 
 toggle.addEventListener("change", () => {
+    exposeSpan.textContent = localStorage.exposeKey == undefined ? "w" : localStorage.exposeKey
+    flagSpan.textContent = localStorage.flagKey == undefined ? "d" : localStorage.flagKey
     document.getElementById("kbt")!!.style.display = `${toggle.checked ? "inline" : "none"}`;
 });
 
 document.addEventListener("keypress", (e: KeyboardEvent): void => {
     if(!toggle.checked) return;
 
+    if(exposePressed) {
+        exposeKey = e.key == flagKey ? exposeKey : e.key;
+        exposeSpan.textContent = exposeKey;
+        localStorage.exposeKey = exposeKey;
+        exposePressed = false;
+
+        return;
+    } else if(flagPressed) {
+        flagKey = e.key == exposeKey ? flagKey : e.key;
+        flagSpan.textContent = flagKey;
+        localStorage.flagKey = flagKey;
+        flagPressed = false;
+
+        return;
+    }
+
     const field: Field = FieldHelper.getField(lastMousePosition.x, lastMousePosition.y);
 
-    if(e.key == "w") {
+    if(e.key == exposeKey) {
         if (field.revealed || field.flag) return;
         clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Click, lastMousePosition)));
-    } else if(e.key == "d") {
+    } else if(e.key == flagKey) {
         if (field.revealed) return;
         clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Flag, lastMousePosition)));
     }
